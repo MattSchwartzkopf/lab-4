@@ -62,25 +62,25 @@ class UploadClient:
         return data
     
     def recv_until_delimiter(self, byte):
-        words = b""
-        message = b""
-        print(byte)
-        i = 0
-
-        while(byte):
-            message = self.socket.recv(constants.MAX_BYTES)
-            while True:
-                if(message.__contains__(byte)):
-                    words+= message
-                    print(words)
-                    return words
-                else:
-                    words+= message
-                    print(words)
-                    return(words)
-
-
-    #pass # remove once have an actual implementation
+        words = ""
+        
+        # Gets all the words being sent
+        #message = self.socket.recv(constants.MAX_BYTES).decode('ascii')
+        
+        while True:
+            # Gets all the words, but overwrites and adds the delimiter at the end
+            message = self.socket.recv(constants.MAX_BYTES).decode('ascii')
+            
+            # Reads each character in message, checks for delimiter
+            for char in message:
+                if(char == byte):
+                    break
+                elif(char != byte):
+                    words+= char
+        
+            print(words)
+            return(words)
+        return(words)
         
 
 
