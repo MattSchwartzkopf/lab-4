@@ -62,18 +62,33 @@ class UploadClient:
     
     def recv_until_delimiter(self, byte):
         words = self.stored
-        # Gets all the words being sent
         
         while byte not in words:
-            # Gets all the words, but overwrites and adds the delimiter at the end
             words += self.socket.recv(constants.MAX_BYTES)
             
         fields = words.split(byte, 1)
         self.stored = fields[1]
         return(fields[0])
         
+    def upload_file(self, filename):
+        header = 'UPLOAD ' + os.path.basename(filename) + ' '
+        with open(filename, 'rb') as f:
+            contents = f.read()
+            header += str(len(contents)) + '\n'
+            message = (header.encode('ascii') + contents)
+            self.socket.send(message)
+        response = self.recv_until_delimiter(b'\n')
+        if response != b'OK':
+            raise UploadError()
+            
+    def list_files(self):
+        response = self.recv_until_delimiter(b'\n')
+        if response == b'LIST':
+            print("yup")
+        
 
 
+        
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='TCP File Uploader')
     parser.add_argument('host', help='interface the server listens at;'
