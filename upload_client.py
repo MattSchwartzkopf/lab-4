@@ -10,7 +10,7 @@ Prof. Joshua Auerbach (jauerbach@champlain.edu)
 """
 
 """
-Author:              Brian Nguyen	And Matthew Schwartzkopf
+Author:              Brian Nguyen And Matthew Schwartzkopf
 Class:               CSI-235
 Assignment:          Lab 3
 Date Assigned:       Feb 2, 2018
