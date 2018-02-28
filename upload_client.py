@@ -82,10 +82,16 @@ class UploadClient:
             raise UploadError()
             
     def list_files(self):
-        response = self.recv_until_delimiter(b'\n')
-        if response == b'LIST':
-            print("yup")
-        
+        self.socket.send(b'LIST\n')
+        responses = []
+        while True:
+            response = self.recv_until_delimiter(b'\n')
+            if len(response) == 0:
+                return responses
+            fields = response.split()
+            fields[0] = fields[0].decode('ascii')
+            fields[1] = int(fields[1])
+            responses.append(fields)
 
 
         
