@@ -45,7 +45,7 @@ class UploadClient:
     def __init__(self, host, port):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((host, port))
-        #self.listen(1)
+        self.stored = b''
     
     def close(closer):
         closer.socket.close()
@@ -54,33 +54,23 @@ class UploadClient:
         receive_data = b''
         data = b''
         while(len(data) < length):
-            if(len(data) < length):
-               receive_data = self.socket.recv(length - len(data))
-               data+= receive_data
-            else:
-               raise UploadError
+            receive_data = self.socket.recv(length - len(data))
+            if not receive_data:
+                raise UploadError()
+            data += receive_data
         return data
     
     def recv_until_delimiter(self, byte):
-        words = ""
-        
+        words = self.stored
         # Gets all the words being sent
-        #message = self.socket.recv(constants.MAX_BYTES).decode('ascii')
         
-        while True:
+        while byte not in words:
             # Gets all the words, but overwrites and adds the delimiter at the end
-            message = self.socket.recv(constants.MAX_BYTES).decode('ascii')
+            words += self.socket.recv(constants.MAX_BYTES)
             
-            # Reads each character in message, checks for delimiter
-            for char in message:
-                if(char == byte):
-                    break
-                elif(char != byte):
-                    words+= char
-        
-            print(words)
-            return(words)
-        return(words)
+        fields = words.split(byte, 1)
+        self.stored = fields[1]
+        return(fields[0])
         
 
 
